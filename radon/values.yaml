@@ -1,0 +1,193 @@
+## radon image version
+## ref: https://hub.docker.com/repository/docker/zlianzhuang/radon
+##
+image: "zlianzhuang/radon"
+imageTag: "v1.0"
+
+busybox:
+  image: "busybox"
+  tag: "1.32"
+
+## Specify an imagePullPolicy (Required)
+## It's recommended to change this to 'Always' if the image tag is 'latest'
+## ref: http://kubernetes.io/docs/user-guide/images/#updating-images
+##
+imagePullPolicy: IfNotPresent
+
+# name,localhost,3306,root,password,100: name1,localhost1.....
+backend_name_host_port_user_password_maxconnections: ""
+
+# use the headless svc, default host is {.Release.Name}-mysql.{Release.Name}-mysql
+backend_name: mysql
+backend_host: {}
+backend_port: 3306
+backend_user: root
+backend_password: qingcloud
+backend_maxconnections: 100
+backend_replicas: 1
+
+#create this database
+database: qingcloud
+
+timezone: "Asia/Shanghai"
+
+# one pod
+replicas: 1
+
+# statefulset Annotations
+statefulsetAnnotations: {}
+
+# To be added to the database server pod(s)
+podAnnotations: {}
+podLabels: {}
+
+## Use an alternate scheduler, e.g. "stork".
+## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
+##
+# schedulerName:
+
+# ref: https://kubernetes.io/docs/concepts/containers/images/#specifying-imagepullsecrets-on-a-pod
+imageCredentials:
+  enable: false
+  registry: http://192.168.0.3:8090
+  username: qingcloud
+  password: qingcloud
+
+## Set pod priorityClassName
+# priorityClassName: {}
+
+## Security context
+securityContext:
+  enabled: false
+  runAsUser: 999
+  fsGroup: 999
+
+## Init container resources defaults
+initContainer:
+  resources:
+    requests:
+      memory: 10Mi
+      cpu: 10m
+
+extraInitContainers: |
+  # - name: do-something
+  #   image: busybox
+  #   command: ['do', 'something']
+
+## Node selector
+## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector
+nodeSelector: {}
+
+## Affinity
+## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+affinity: {}
+
+## Tolerations for pod assignment
+## Ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+##
+tolerations: []
+
+## Additionnal arguments that are passed to the Radon container.
+args: []
+
+## Configure resource requests and limits
+## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+##
+resources:
+  requests:
+    memory: 256Mi
+    cpu: 100m
+  limits:
+    memory: 256Mi
+    cpu: 100m
+
+
+livenessProbe:
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  successThreshold: 1
+  failureThreshold: 3
+
+readinessProbe:
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 1
+  successThreshold: 1
+  failureThreshold: 3
+
+# create pv for test persistence
+#apiVersion: v1
+#kind: PersistentVolume
+#metadata:
+#  name: lzz-pv1
+#spec:
+#  capacity:
+#    storage: 1Gi
+#  persistentVolumeReclaimPolicy: Recycle
+#  accessModes:
+#    - ReadWriteOnce
+#  hostPath:
+#    path: "/pv/lzz-pv1"
+## Persist data to a persistent volume
+persistence:
+  enabled: false
+  ## database data Persistent Volume Storage Class
+  ## If defined, storageClassName: <storageClass>
+  ## If set to "-", storageClassName: "", which disables dynamic provisioning
+  ## If undefined (the default) or set to null, no storageClassName spec is
+  ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
+  ##   GKE, AWS & OpenStack)
+  ##
+  # storageClass: "-"
+  accessMode: ReadWriteOnce
+  size: 1Gi
+  annotations: {}
+
+metrics:
+  enabled: false
+  image: prom/mysqld-exporter
+  imageTag: v0.10.0
+  imagePullPolicy: IfNotPresent
+  resources: {}
+  annotations: {}
+    # prometheus.io/scrape: "true"
+    # prometheus.io/port: "9104"
+  livenessProbe:
+    initialDelaySeconds: 15
+    timeoutSeconds: 5
+  readinessProbe:
+    initialDelaySeconds: 5
+    timeoutSeconds: 1
+  flags: []
+  serviceMonitor:
+    enabled: false
+    additionalLabels: {}
+
+## Configure the service
+## ref: http://kubernetes.io/docs/user-guide/services/
+service:
+  annotations: {}
+  ## Specify a service type
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services---service-types
+  type: ClusterIP
+  clusterIP: None
+  port: 3308
+  # nodePort: 32000
+  # loadBalancerIP:
+
+## Pods Service Account
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
+serviceAccount:
+  ## Specifies whether a ServiceAccount should be created
+  ##
+  create: false
+  ## The name of the ServiceAccount to use.
+  ## If not set and create is true, a name is generated using the mariadb.fullname template
+  # name:
+
+
+## A string to add extra environment variables
+# extraEnvVars: |
+#   - name: EXTRA_VAR
+#     value: "extra"

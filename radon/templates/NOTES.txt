@@ -1,0 +1,26 @@
+Radon can be accessed via port 3308 on the following DNS name from within your cluster:
+{{ template "radon.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local
+
+the backend addresses(address fields is name host port user password max_connections):
+
+	{{ template "radon.backendaddress" . }}
+
+To connect to your database:
+
+1. Run an Ubuntu pod that you can use as a client:
+
+    kubectl run -i --tty ubuntu --image=ubuntu:16.04 --restart=Never -- bash -il
+
+    ubuntu is running:
+        kubectl exec -it ubuntu:16.04 -- bash
+
+
+2. Install the mysql client:
+
+    $ apt-get update && apt-get install mysql-client -y
+
+3. Connect using the mysql cli, then provide your password:
+    $ mysql -h {{ template "radon.fullname" . }}-{replicas number}.{{ template "radon.fullname" . }} -p
+    or
+    $ mysql -h {{ template "radon.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local -p
+

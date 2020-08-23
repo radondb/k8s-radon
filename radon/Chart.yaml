@@ -1,0 +1,17 @@
+apiVersion: v1
+appVersion: 1.1.1
+description: radon is Fast, reliable, scalable, and easy to use open-source relational database system.
+home: https://radondb.io/
+icon: https://avatars1.githubusercontent.com/u/31385114?s=200&v=4
+keywords:
+- radon
+- database
+- sql
+maintainers:
+- email: lianzhuangzhang@yunify.com
+  name: zhang lian zhuang
+name: radon
+sources:
+- https://github.com/kubernetes/charts
+- https://github.com/radondb/radon
+version: 1.0.0
