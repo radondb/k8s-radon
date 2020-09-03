@@ -12,7 +12,7 @@ To connect to your database:
     kubectl run -i --tty ubuntu --image=ubuntu:16.04 --restart=Never -- bash -il
 
     ubuntu is running:
-        kubectl exec -it ubuntu:16.04 -- bash
+        kubectl exec -it ubuntu -- bash
 
 
 2. Install the mysql client:
